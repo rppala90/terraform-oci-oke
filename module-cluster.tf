@@ -15,9 +15,9 @@ data "oci_containerengine_cluster_kube_config" "private" {
 }
 
 locals {
-  cluster_enabled        = var.create_cluster || coalesce(var.cluster_id, "none") != "none"
-  cluster_id             = var.create_cluster ? one(module.cluster[*].cluster_id) : var.cluster_id
-  apiserver_private_host = local.cluster_enabled ? try(split(":", one(module.cluster[*].endpoints.private_endpoint))[0], "") : null
+  cluster_enabled = var.create_cluster || var.use_existing_cluster
+  cluster_id      = var.create_cluster ? one(module.cluster[*].cluster_id) : var.cluster_id
+  cluster_name    = coalesce(var.cluster_name, "oke-${local.state_id}")
 
   kubeconfig_public  = var.control_plane_is_public ? try(yamldecode(lookup(one(data.oci_containerengine_cluster_kube_config.public), "content", "")), tomap({})) : null
   kubeconfig_private = try(yamldecode(lookup(one(data.oci_containerengine_cluster_kube_config.private), "content", "")), tomap({}))
