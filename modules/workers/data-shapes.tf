@@ -7,12 +7,12 @@ data "oci_core_shapes" "oke" {
 
 locals {
   shapes_by_name = {
-    for shape in data.oci_core_shapes.oke.shapes :
-    lookup(shape, "name") => shape if contains(keys(shape), "name")
+  for shape in data.oci_core_shapes.oke.shapes :
+  lookup(shape, "name") => shape... if contains(keys(shape), "name")
   }
 
   platform_config_by_shape = {
-    for k, v in local.shapes_by_name :
-    k => merge(lookup(v, "platform_config_options", [])...)
+  for k, v in local.shapes_by_name :
+  k => merge(lookup(v[0], "platform_config_options", [])...)
   }
 }
